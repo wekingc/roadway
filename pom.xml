@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.weking</groupId>
+    <artifactId>roadway</artifactId>
+    <packaging>pom</packaging>
+    <version>2.0.0-beta</version>
+    <modules>
+        <module>roadway-navigator</module>
+        <module>roadway-driver</module>
+        <module>roadway-core</module>
+    </modules>
+    <name>${project.artifactId}</name>
+    <description>A distributed online configurable gateway.</description>
+
+    <properties>
+        <java.version>1.8</java.version>
+        <spring-cloud.version>Hoxton.SR6</spring-cloud.version>
+        <spring-boot.version>2.3.1.RELEASE</spring-boot.version>
+        <java-jwt.version>3.10.1</java-jwt.version>
+        <zookeeper.version>3.6.1</zookeeper.version>
+        <curator.version>5.1.0</curator.version>
+        <maven.compiler.plugin>3.8.1</maven.compiler.plugin>
+    </properties>
+    <repositories>
+        <repository>
+            <id>alimaven</id>
+            <name>aliyun maven</name>
+            <url>http://maven.aliyun.com/nexus/content/groups/public/</url>
+        </repository>
+
+    </repositories>
+    <developers>
+        <developer>
+            <id>wekingc</id>
+            <name>Jim Cen</name>
+            <email>c_weking@126.com</email>
+            <url>https://github.com/wekingc</url>
+        </developer>
+    </developers>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>${maven.compiler.plugin}</version>
+                <configuration>
+                    <source>8</source>
+                    <target>8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

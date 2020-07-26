@@ -1,0 +1,142 @@
+﻿
+<form>
+    <div class="form-horizontal">
+        <div class="col-md-9">
+            <div class="form-group" >
+                <label for="drop-gateway" class="col-md-2 control-label"> 网关名称</label>
+                <div class="col-md-6">
+                    <div class="dropdown">
+                        <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                            空
+                            <span class="caret"></span>
+                        </button>
+                        <ul class="dropdown-menu" id="drop-gateway">
+                        </ul>
+                        <input id="gateway" type="hidden" value="" />
+                    </div>
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="path" class="col-md-2 control-label">网关路径</label>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="path" placeholder="/agv" >
+                </div>
+            </div>
+            <div class="form-group" >
+                <label for="url" class="col-md-2 control-label">对应地址</label>
+                <div class="col-md-6">
+                    <input type="text" class="form-control" id="url" placeholder="http://127.0.0.1:8091" >
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="col-md-offset-2 col-md-6">
+                    <button type="button" onclick="add()" class="btn btn-primary">添加</button>
+                </div>
+            </div>
+            <div class="form-group">
+                <div class="alert alert-danger alert"></div>
+                <div class="alert alert-info alert"></div>
+            </div>
+        </div>
+    </div>
+</form>
+<script>
+    window.onload = function () {
+        if (!window.$ || !window.custom)
+             window.location.replace("login.html");
+    }
+
+    $(document).ready(function () {
+        authorize();
+        listGateway();
+        $(".alert").hide();
+    })
+
+    function listGateway() {
+        $.postForm({
+            url: "/api/roadway/gateway/list",
+            contentType: "application/json",
+            success: function (data) {
+                if(data.code === 601) {
+                     window.location.replace("login.html");
+                     return;
+                }
+                if (data.code === 200) {
+                    var list = data.data;
+                    var e = $("#drop-gateway");
+                    list.forEach(function(l){
+                        e.append('<li><a href="javascript:void(0)" onclick=selectDropdown("gateway","'+ l.name +'") >' + l.name + '</a></li>');
+                    });
+
+                }
+            },
+            error: function (x, s, t) {
+                 $(".alert-danger").html(x.responseText);
+            }
+        })
+    }
+
+    function selectDropdown(name,value) {
+        document.getElementById(name).value = value;
+        var e = $(target(event));
+        e.parent().parent().parent().find("button").html(e.html()+'&nbsp;&nbsp;<span class="caret"></span>');
+    }
+
+    function add() {
+        $(".alert").hide();
+        var gateway = $.trim($("#gateway").val());
+        if(gateway == "") {
+            $(".alert-danger").html("网关不能为空").show();
+            $("#drop-gateway").focus();
+            return;
+        }
+
+        var path = $.trim($("#path").val());
+        if(path == "") {
+            $(".alert-danger").html("路径不能为空").show();
+            $("#path").focus();
+            return;
+        }
+        var url = $.trim($("#url").val());
+        if(url == "") {
+            $(".alert-danger").html("API地址不能为空").show();
+            $("#url").focus();
+            return;
+        }
+        if(!validateURL(url)) {
+            $(".alert-danger").html("API地址格式不正确").show();
+            $("#url").focus();
+            return;
+        }
+
+        if(/\/$/.test(path)) {
+            $(".alert-danger").html("路径不能以‘/’结束").show();
+            $("#path").focus();
+            return;
+        }
+        if(/\/$/.test(url)) {
+            $(".alert-danger").html("API地址不能以‘/’结束").show();
+            $("#url").focus();
+            return;
+        }
+        $.postForm({
+            url: "/api/roadway/gateway/route/add",
+            success: function (data) {
+                if(data.code === 601) {
+                     window.location.replace("login.html");
+                     return;
+                }
+                if (data.code === 200) {
+                    $(".alert-info").html("添加成功").show();
+                    $("input[type=text]").val("");
+                } else {
+                    $(".alert-danger").html(data.message).show();
+                    $("#url").select();
+                }
+            },
+            error: function (x, s, t) {
+                $(".alert-danger").html(x.responseText);
+            }
+        })
+    }
+</script>

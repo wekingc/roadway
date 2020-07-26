@@ -1,0 +1,32 @@
+server:
+  port: 8090
+#  address: 127.0.0.1
+spring:
+  mail:
+    host: smtp.126.com
+    port: 25
+    from: c_weking@126.com
+    to: c_weking@126.com
+    username:
+    password:
+    properties:
+      mail:
+        smtp:
+          auth: false
+          starttls:
+            enable: false
+            required: false
+          socketFactory:
+            class: javax.net.ssl.SSLSocketFactory
+jwt:
+  expire: 86400
+  secret: ff145346140f5435718141b41b8ec76e
+  issuer: Jim Cen
+  audience: everyone
+
+zookeeper:
+  hosts: 127.0.0.1:2181
+  namespace: roadway
+  timeout: 5000
+
+secret: 8C7A0B3B73902ACF13DEA47F6E706544
