@@ -3,7 +3,6 @@ package com.weking.core.services.interfaces;
 import com.weking.core.models.Gateway;
 import com.weking.core.models.Route;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -12,10 +11,6 @@ import java.util.List;
  * @date 2020/7/14 13:21
  */
 public interface GatewayService {
-
-    int DEFAULT_HOST_PORT = 8080;
-    String HOST_PORT_SEPARATOR = ":";
-
     /**
      * 添加
      * @param gateway Gateway
@@ -72,11 +67,14 @@ public interface GatewayService {
      * @return 是否成功
      */
     default boolean deleteRoute(String gatewayName,String path) {
-        Iterator<Route> iterator = getGateway(gatewayName).getRoutes().iterator();
+        List<Route> routeList = getGateway(gatewayName).getRoutes();
+        Iterator<Route> iterator = routeList.iterator();
         while(iterator.hasNext()) {
             Route route = iterator.next();
             if(path.equalsIgnoreCase(route.getPath())) {
                 iterator.remove();
+                Gateway gateway = new Gateway(gatewayName,routeList);
+                return updateGateway(gateway);
             }
         }
         return true;

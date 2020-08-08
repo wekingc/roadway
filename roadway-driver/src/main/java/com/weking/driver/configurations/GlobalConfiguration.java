@@ -1,6 +1,7 @@
 package com.weking.driver.configurations;
 
 
+import com.weking.core.models.Gateway;
 import com.weking.core.services.GracefulShutdown;
 import com.weking.core.services.interfaces.GatewayService;
 import com.weking.driver.DriverRouteLocator;
@@ -10,6 +11,8 @@ import org.springframework.cloud.gateway.route.builder.RouteLocatorBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
+
+import java.util.ArrayList;
 
 /**
  * @author Jim Cen
@@ -30,5 +33,12 @@ public class GlobalConfiguration {
     @Bean
     public DriverRouteLocator driverRouteLocator(RouteLocatorBuilder builder) {
         return new DriverRouteLocator(gatewayName, gatewayService);
+    }
+
+    @Autowired
+    public void defaultGateway() {
+        if(gatewayService.getGateway(gatewayName) == null) {
+            gatewayService.addGateway(new Gateway(gatewayName,new ArrayList<>()));
+        }
     }
 }

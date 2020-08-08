@@ -1,5 +1,5 @@
 server:
-  name: g1
+  name: g2
   port: 8091
 #  address: 127.0.0.1
 

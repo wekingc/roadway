@@ -15,18 +15,35 @@
 <form>
     <div class="container">
         <div class="row">
+            <div class="col-md-8"><br/></div>
+        </div>
+        <div class="row">
+            <div class="col-md-8">
+                <div class="form-group" >
+                    <label for="drop-gateway" class="col-md-2 control-label"> 网关名称</label>
+                    <div class="col-md-6">
+                        <div class="dropdown">
+                            <button class="btn btn-default dropdown-toggle" type="button"  data-toggle="dropdown" aria-haspopup="true" aria-expanded="true">
+                                空
+                                <span class="caret"></span>
+                            </button>
+                            <ul class="dropdown-menu" id="drop-gateway">
+                            </ul>
+                            <input id="gateway" type="hidden" value="" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
             <div class="col-md-8">
                 <table data-toggle="table" class="table" id="table">
                     <thead class="bg-primary">
                     <tr>
-                        <th data-field="id">编号</th>
                         <th data-field="path" data-sortable="true">路径</th>
-                        <th data-field="url" data-sortable="true">调用地址</th>
+                        <th data-field="dest" data-sortable="true">调用地址</th>
                         <th data-formatter="deleteFormatter" data-events="operateEvents">
                             删除
-                        </th>
-                        <th data-formatter="enableFormatter" data-events="operateEvents">
-                            停用/启用
                         </th>
                     </tr>
                     </thead>
@@ -44,7 +61,6 @@
     }
    var $table = $('#table');
 
-
     var deleteFormatter = function (value, row, index) {
         return [
             '<a class="remove" href="javascript:void(0)" title="删除">',
@@ -53,67 +69,20 @@
         ].join('');
     }
 
-    var enableFormatter = function (value, row, index) {
-        if (row.enabled) {
-            return [
-                '<a class="enable" href="javascript:void(0)" title="停用">',
-                '<i class="fa fa-thumbs-up fa-2x"></i>',
-                '</a>  '
-            ].join('');
-        }
-        else {
-            return [
-                '<a class="enable" href="javascript:void(0)" title="启用">',
-                '<i class="fa fa-thumbs-down fa-2x"></i>',
-                '</a>  '
-            ].join('');
-        }
-    }
-
-
     var operateEvents = {
         'click .remove': function (e, value, row, index) {
-            del(row.id);
-        },
-       'click .enable': function (e, value, row, index) {
-            enable(index, row,!row.enabled);
-        },
+            del(row.path,row.dest);
+        }
     }
 
-   function enable(index, route, enabled) {
+    function del(path,dest) {
         $(".alert").hide();
         $.postForm({
-            url: "/api/roadway/route/enable",
-            contentType: "application/json",
-            data: route,
-            modify: function(data) {
-                data.enabled = enabled;
-                return data;
-            },
-            success: function (data) {
-                if(data.code === 601) {
-                     window.location.replace("login.html");
-                     return;
-                }
-                if (data.code == 200) {
-                    $(".alert-info").html((enabled? "启用" : "停用") + "成功").show();
-                    $table.bootstrapTable('updateCell', {index: index, field: 'enabled', value: enabled})
-                } else {
-                    $(".alert-danger").html((enabled? "启用" : "停用") + "失败," + data.message).show();
-                }
-            },
-            error: function (x, s, t) {
-                $(".alert-danger").html(x.responseText).show();
-            }
-        })
-    }
-
-    function del(id) {
-        $(".alert").hide();
-        $.postForm({
-            url: "/api/roadway/route/delete",
+            url: "/api/roadway/gateway/route/delete",
             data: {
-                id: id
+                gateway: $("#gateway").val(),
+                path:path,
+                dest:dest
             },
             success: function (data) {
                 if(data.code === 601) {
@@ -123,8 +92,8 @@
                 if (data.code === 200) {
                     $(".alert-info").html(data.message).show();
                     $table.bootstrapTable('remove', {
-                        field: 'id',
-                        values: [id]
+                        field: 'path',
+                        values: [path]
                     });
                 } else {
                     $(".alert-danger").html(data.message).show();
@@ -136,10 +105,37 @@
         })
     }
 
-    function list() {
-      $(".alert").hide();
+    function listGateway() {
         $.postForm({
-            url: "/api/roadway/route/list",
+            url: "/api/roadway/gateway/list",
+            contentType: "application/json",
+            success: function (data) {
+                if(data.code === 601) {
+                     window.location.replace("login.html");
+                     return;
+                }
+                if (data.code === 200) {
+                    var list = data.data;
+                    var e = $("#drop-gateway");
+                    list.forEach(function(l){
+                        e.append('<li><a href="javascript:void(0)" onclick=selectDropdown("gateway","'+ l.name +'") >' + l.name + '</a></li>');
+                    });
+
+                }
+            },
+            error: function (x, s, t) {
+                 $(".alert-danger").html(x.responseText);
+            }
+        })
+    }
+
+    function selectDropdown(name,value) {
+        document.getElementById(name).value = value;
+        var e = $(target(event));
+        e.parent().parent().parent().find("button").html(e.html()+'&nbsp;&nbsp;<span class="caret"></span>');
+        $(".alert").hide();
+        $.postForm({
+            url: "/api/roadway/gateway/route/" + value,
             success: function (data) {
                 if(data.code === 601) {
                      window.location.replace("login.html");
@@ -149,16 +145,7 @@
                      $(".alert-danger").html(data.message).show();
                      return;
                 }
-                $table.bootstrapTable({
-                    data: data.data,
-                    pagination: true,
-                    search: true,
-                    rowAttributes: function (row, index) {
-                        if (!row.enabled) {
-                            return { "class": "disabled" };
-                        }
-                    }
-                })
+                $table.bootstrapTable('load',data.data);
             },
             error: function (x, s, t) {
                $(".alert-danger").html(x.responseText).show();
@@ -167,6 +154,11 @@
     }
 
     $(document).ready(function () {
-        list();
+        listGateway();
+        $table.bootstrapTable({
+            data: [],
+            pagination: true,
+            search: true
+        })
     })
 </script>

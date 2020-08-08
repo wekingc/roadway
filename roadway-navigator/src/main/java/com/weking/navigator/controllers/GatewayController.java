@@ -1,6 +1,5 @@
 package com.weking.navigator.controllers;
 
-import com.weking.core.annotations.Token;
 import com.weking.core.services.interfaces.GatewayService;
 import com.weking.core.models.Gateway;
 import com.weking.core.models.ResponseResult;
@@ -24,7 +23,6 @@ public class GatewayController {
     GatewayService gatewayService;
 
     @PostMapping("/route/{name}")
-    @Token
     public ResponseResult getRoutes(@PathVariable String name) {
         List<Route> routes = gatewayService.getGateway(name).getRoutes();
         return new ResponseResult(ResponseResult.OK,null,routes);
