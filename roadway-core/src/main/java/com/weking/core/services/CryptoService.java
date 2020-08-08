@@ -1,9 +1,5 @@
 package com.weking.core.services;
 
-import com.weking.core.models.Ticket;
-import lombok.SneakyThrows;
-import org.springframework.beans.factory.annotation.Value;
-
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -13,9 +9,6 @@ import java.security.NoSuchAlgorithmException;
  * @date 2020/7/14 13:47
  */
 public class CryptoService {
-    @Value("${secret}")
-    private String secret;
-
     /**
      * MD5加密服务
      * @param plainText 明文
@@ -32,25 +25,5 @@ public class CryptoService {
             md5code.insert(0, "0");
         }
         return md5code.toString();
-    }
-
-    /**
-     * 获取token
-     * @param timestamp 时间戳
-     * @return token
-     */
-    @SneakyThrows
-    public String generateToken(long timestamp) {
-        return md5Encode(timestamp + "MID" + secret );
-    }
-
-    /**
-     * 获取ticket
-     * @param timestamp 时间戳
-     * @return ticket
-     */
-    @SneakyThrows
-    public Ticket generateTicket(long timestamp) {
-        return new Ticket(generateToken(timestamp),timestamp);
     }
 }

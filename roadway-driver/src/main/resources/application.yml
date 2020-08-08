@@ -1,10 +1,9 @@
-navigator:
-  address: 127.0.0.1
-  port: 8090
-
 server:
   name: g1
   port: 8091
 #  address: 127.0.0.1
 
-secret: 8C7A0B3B73902ACF13DEA47F6E706544
+zookeeper:
+  hosts: 127.0.0.1:2181
+  namespace: roadway
+  timeout: 5000

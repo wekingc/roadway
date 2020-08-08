@@ -44,9 +44,7 @@ public class ZookeeperGatewayServiceImpl implements GatewayService {
     public List<Gateway> listAll() {
         return zookeeperService.list("/gateway")
                                .stream()
-                               .map(name ->  {
-                                   return getGateway(name);
-                               })
+                               .map(this::getGateway)
                                .collect(Collectors.toList());
     }
 

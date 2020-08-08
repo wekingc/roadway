@@ -17,6 +17,5 @@ import java.util.List;
 @EqualsAndHashCode
 public class Gateway {
     String name;
-    List<String> hosts;
     List<Route> routes;
 }

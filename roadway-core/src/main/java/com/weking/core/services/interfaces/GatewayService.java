@@ -1,6 +1,5 @@
 package com.weking.core.services.interfaces;
 
-import com.weking.core.models.Driver;
 import com.weking.core.models.Gateway;
 import com.weking.core.models.Route;
 
@@ -16,28 +15,6 @@ public interface GatewayService {
 
     int DEFAULT_HOST_PORT = 8080;
     String HOST_PORT_SEPARATOR = ":";
-
-    /**
-     * driver注册
-     * @param driver Driver
-     */
-    default void registerDriver(Driver driver) {
-        Gateway gateway = getGateway(driver.getGatewayName());
-        if(gateway == null) {
-            List<String> hosts = new ArrayList<>();
-            hosts.add(driver.getHost() + GatewayService.HOST_PORT_SEPARATOR + driver.getPort());
-            gateway = new Gateway(driver.getGatewayName(), hosts,new ArrayList<>());
-            addGateway(gateway);
-        }
-        else {
-            if(!gateway.getHosts().contains(driver.getHost() + HOST_PORT_SEPARATOR + driver.getPort())) {
-                gateway.getHosts().add(driver.getHost() + HOST_PORT_SEPARATOR + driver.getPort());
-                updateGateway(gateway);
-            }
-        }
-
-
-    }
 
     /**
      * 添加
